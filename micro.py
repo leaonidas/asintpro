@@ -34,7 +34,8 @@ def canteen():
 
 def rooms():
 	roomid=2448131363667
-	date="21/02/2014"
+	#date="21/02/2014"
+	date=datetime.date.today().strftime("%d/%m/%Y")
 	uri = "https://fenix.tecnico.ulisboa.pt/api/fenix/v1/spaces/"+str(roomid)+"?day="+str(date)
 	r = requests.get(uri)
 	print(r.status_code)
@@ -51,7 +52,8 @@ def rooms():
 		elif(this["type"]=="GENERIC" and this["day"]==date):
 			print(this["type"]+"\n"+this["start"]+"\n"+this["end"]+"\n"+this["title"]+"\n")
 		elif(this["type"]=="TEST"):
-			print(this)
+			#print(this)
+			pass
 				
 def main():
 	cantina = canteen()
@@ -60,8 +62,15 @@ def main():
 main()	
 
 """
-- secretaria
-- que informação e por que datas
-- para onde esta informação vai(HTML?)
+DUVIDAS
 """
+
+"""
+ALTERAÇÕES A FAZER
+- criar class micro em que cada método é um microservice
+- no __init__ criar storage space para receber/escrever data (ist/site)
+- implementar chache
+-
+"""
+
 

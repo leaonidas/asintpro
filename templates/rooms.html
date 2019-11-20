@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Rooms</title>
+</head>
+<body>
+<h1>Room {{ name }} schedule</h1>
+Campus: {{ campus }}
+
+	<h2>Lessons</h2>
+	{% for i in range (num_lessons) %}
+		<p>Type: {{ lessons_info[i] }}</p>
+		<p>Course: {{ lessons_course[i] }}</p>
+		<p>Start: {{ lessons_start[i] }}</p>
+		<p>End: {{ lessons_end[i] }}</p>
+	{% endfor %}
+
+	<h2>Generic</h2>
+	{% for i in range (num_generic) %}
+		<p>Title: {{ generic_title[i] }}</p>
+		<p>Start: {{ generic_start[i] }}</p>
+		<p>End: {{ generic_end[i] }}</p>
+	{% endfor %}
+
+</body>
+</html>

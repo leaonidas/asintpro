@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Canteen</title>
+</head>
+<body>
+<h1>Canteen Menu</h1>
+Day: {{ day }}
+
+	{% for i in range(size) %}
+	    {% if i==0 or i==3 %}<h2>Refeição: {{ meal[i] }}</h2> {% endif %}
+	    <p>Menu: {{ menu[i] }}</p>
+	    <p>Prato: {{ name[i] }}</p>
+	    <p>Tipo: {{ mtype[i] }}</p>
+	{% endfor %}
+</body>
+</html>
