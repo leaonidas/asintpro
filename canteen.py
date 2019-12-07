@@ -22,13 +22,16 @@ app = Flask(__name__)
 def show_menu():
 	can = Canteen()
 	today = datetime.date.today().strftime("%d/%m/%Y")
+	print(today)
 	uri = "https://fenix.tecnico.ulisboa.pt/api/fenix/v1/canteen"
 	r = requests.get(uri)
 	print(r.status_code)
 	data = r.json()
+	#print(data)
 	for menu in data:
 		if menu["day"]==today:
-			#print(menu.meal.info.menu)
+			print("Inside if\n")
+			print(menu.meal.info.menu)
 			for papa in menu["meal"]:
 				print("\n")
 				print("Refeição:", papa["type"])
