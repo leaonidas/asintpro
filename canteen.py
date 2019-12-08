@@ -1,5 +1,6 @@
 import requests
 import datetime
+import logging
 
 from flask import Flask
 from flask import render_template
@@ -17,21 +18,21 @@ class Canteen:
 		return len(self.menu)
 
 app = Flask(__name__)
+logging.basicConfig(filename='logs.log',level=logging.DEBUG)
 
 @app.route('/canteen')
 def show_menu():
 	can = Canteen()
 	today = datetime.date.today().strftime("%d/%m/%Y")
-	print(today)
+	if today[0] == '0':
+		today = today[1:]
 	uri = "https://fenix.tecnico.ulisboa.pt/api/fenix/v1/canteen"
 	r = requests.get(uri)
 	print(r.status_code)
 	data = r.json()
-	#print(data)
 	for menu in data:
-		if menu["day"]==today:
-			print("Inside if\n")
-			print(menu.meal.info.menu)
+		print(menu)
+		if menu["day"]=="6/12/2019":
 			for papa in menu["meal"]:
 				print("\n")
 				print("Refeição:", papa["type"])

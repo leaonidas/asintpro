@@ -3,6 +3,7 @@ import datetime
 import pickle
 import os.path as path
 import json
+import logging
 
 from flask import Flask
 from flask import render_template
@@ -21,7 +22,6 @@ class Secretariat:
 		self.schedule = []
 
 	def readDB(self):
-		#if path.exists('database'):
 		self.dictionary = {}
 		self.dictionary['sect'] = []
 		with open('database.txt', 'r') as file:
@@ -34,12 +34,8 @@ class Secretariat:
 					"description" : i["description"]
 				})
 		print(self.dictionary['sect'])
-		"""else:
-			print("nada")
-			pass"""
 
 	def dbToList(self):
-		#temp = Secretariat()
 		self.name = []
 		self.building = []
 		self.schedule = []
@@ -54,11 +50,15 @@ class Secretariat:
 		return(len(self.name))
 
 app = Flask(__name__)
+logging.basicConfig(filename='logs.log',level=logging.DEBUG)
 sec = Secretariat()
 
 @app.route('/secretariat')
 def sec_info():
-	return render_template('secretariat.html', uname = sec.uname, password = sec.password)
+	sec.readDB()
+	sec.dbToList()
+	return render_template('secretariat.html', name=sec.name, building=sec.building, schedule=sec.schedule, 
+			description=sec.description, size=sec.getSize())
 
 @app.route('/submit')
 def submit():
@@ -72,42 +72,6 @@ def submit():
 			description=sec.description, size=sec.getSize())
 	else:
 		return render_template('loginError.html')
-
-@app.route('/admin')
-def admin():
-	if request.args.get("choice")=="show":
-		sec.readDB()
-		sec.dbToList()
-		return render_template('showSec.html', name=sec.name, building=sec.building, schedule=sec.schedule, 
-			description=sec.description, size=sec.getSize())
-	elif request.args.get("choice")=="edit":
-		return render_template('loginError.html')
-	elif request.args.get("choice")=="add":
-		return render_template('addSec.html')
-
-@app.route('/add')
-def addSec():
-	name = request.args.get("name")
-	building = request.args.get("building")
-	schedule = request.args.get("schedule")
-	description = request.args.get("description")
-	print(name + ' ' + building + ' ' + schedule + ' ' + description + '\n')
-
-	#JSON stuff
-	sec.dictionary['sect'].append({
-		"name" : name,
-		"building" : building,
-		"schedule" : schedule,
-		"description" : description
-		})
-	with open('database.txt', 'w') as outfile:
-		json.dump(sec.dictionary, outfile)
-
-	return render_template("admin.html")
-
-@app.route('/show')
-def showSec():
-	print("In here")
 
 if __name__ == '__main__':
 	app.run(debug=True)

@@ -1,5 +1,6 @@
 import requests
 import datetime
+import logging
 
 from flask import Flask
 from flask import render_template
@@ -32,6 +33,7 @@ class Rooms:
 		self.generic=Generic()
 
 app = Flask(__name__)
+logging.basicConfig(filename='logs.log',level=logging.DEBUG)
 
 @app.route('/rooms')
 def room_info():

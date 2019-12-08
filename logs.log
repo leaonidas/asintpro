@@ -1,0 +1,8 @@
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 226-384-043
+INFO:werkzeug: * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 226-384-043
+INFO:werkzeug:127.0.0.1 - - [08/Dec/2019 11:25:56] "GET /action?secname=&choice=logs HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [08/Dec/2019 11:26:08] "GET /action?secname=&choice=logs HTTP/1.1" 200 -
