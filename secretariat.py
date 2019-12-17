@@ -9,7 +9,6 @@ from flask import Flask
 from flask import render_template
 from flask import request
 
-
 class Secretariat:
 	def __init__(self):
 		self.dictionary = {}
@@ -56,22 +55,8 @@ sec = Secretariat()
 @app.route('/secretariat')
 def sec_info():
 	sec.readDB()
-	sec.dbToList()
-	return render_template('secretariat.html', name=sec.name, building=sec.building, schedule=sec.schedule, 
-			description=sec.description, size=sec.getSize())
-
-@app.route('/submit')
-def submit():
-	print("User name:", str(request.args.get("user")))
-	if request.args.get("user")=='admin' and request.args.get("pass")=='admin':
-		return render_template('admin.html')
-	elif request.args.get("user")=='' and request.args.get("pass")=='':
-		sec.readDB()
-		sec.dbToList()
-		return render_template('showSec.html', name=sec.name, building=sec.building, schedule=sec.schedule, 
-			description=sec.description, size=sec.getSize())
-	else:
-		return render_template('loginError.html')
+	print(sec.dictionary)
+	return sec.dictionary
 
 if __name__ == '__main__':
-	app.run(debug=True)
+	app.run(debug=True, port=5001)
