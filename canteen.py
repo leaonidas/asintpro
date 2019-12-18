@@ -22,8 +22,8 @@ def show_menu():
 	for menu in data:
 		if menu["day"]==today:
 			js=menu
-	print(js)
 	return js
 
 if __name__ == '__main__':
+	print("Server running on port: "+str(5003))
 	app.run(debug=True, port=5003)

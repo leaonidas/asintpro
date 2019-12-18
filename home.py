@@ -4,6 +4,7 @@ import pickle
 import os.path as path
 import json
 import logging
+import socket
 
 from flask import Flask
 from flask import render_template
@@ -31,12 +32,22 @@ class Generic:
 	def gen_num(self):
 		return len(self.start)
 
+class Test:
+	def __init__(self):
+		self.start=[]
+		self.end=[]
+		self.course=[]
+
+	def test_num(self):
+		return len(self.start)
+
 class Rooms:
 	def __init__(self):
 		self.room_name=""
 		self.campus=""
 		self.lessons=Lessons()
 		self.generic=Generic()
+		self.test=Test()
 
 #Classes for Canteen service
 class Canteen:
@@ -115,7 +126,6 @@ class Admin:
 					"schedule" : i["schedule"],
 					"description" : i["description"]
 				})
-		print("ADMIN: ",self.dictionary['sect'])
 
 	def dbToList(self):
 		self.name = []
@@ -132,7 +142,6 @@ class Admin:
 		print(self.dictionary)
 		for item in self.dictionary['sect']:
 			if item["name"] == admin.secname:
-				print("Encontrou!\n")
 				return True
 			else:
 				pass
@@ -166,19 +175,14 @@ def action():
 		room_name=request.args.get('room_name')
 		date=datetime.date.today().strftime("%d/%m/%Y")
 		uri = "http://127.0.0.1:5002"
-		r = requests.get(uri, params=room_name)
-		print("STATUS CODE: ",r.status_code)
-		print(r)
+		r = requests.get(uri, data=room_name)
 		data = r.json()
-		print("Room name:", data["name"])
 		room.room_name=data["name"]
 		elem = data["topLevelSpace"]
-		print("Campus: ", elem["name"])
 		room.campus=elem["name"]
 
 		for this in data["events"]:
 			if(this["type"]=="LESSON" and this["day"]==date):
-				print(this["type"]+"\n"+this["info"]+"\n"+this["start"]+"\n"+this["end"]+"\n"+this["day"])
 				course=this["course"]
 				course_name=course["name"]
 				room.lessons.start.append(this["start"])
@@ -186,17 +190,20 @@ def action():
 				room.lessons.course.append(course_name)
 				room.lessons.info.append(this["info"])
 			elif(this["type"]=="GENERIC" and this["day"]==date):
-				print(this["type"]+"\n"+this["start"]+"\n"+this["end"]+"\n"+this["title"]+"\n")
 				room.generic.start.append(this["start"])
 				room.generic.end.append(this["end"])
 				room.generic.title.append(this["title"])
 			elif(this["type"]=="TEST"):
-				#print(this)
-				pass
+				courses=this["courses"]
+				course_name=course["name"]
+				room.test.start.append(this["start"])
+				room.test.end.append(this["end"])
+				room.test.course.append(course_name)
 
 		return render_template('rooms.html', name=room.room_name, campus=room.campus,
 			lessons_course=room.lessons.course, lessons_info=room.lessons.info, lessons_start=room.lessons.start, lessons_end=room.lessons.end, num_lessons=room.lessons.less_num(),
-			generic_title=room.generic.title, generic_start=room.generic.start, generic_end=room.generic.end, num_generic=room.generic.gen_num())
+			generic_title=room.generic.title, generic_start=room.generic.start, generic_end=room.generic.end, num_generic=room.generic.gen_num(),
+			test_course=room.test.course, test_start=room.test.start, test_end=room.test.end, num_test=room.test.test_num())
 
 	#Canteen Service
 	elif request.args.get('choice')=='canteen':
@@ -207,20 +214,12 @@ def action():
 			today = today[1:]
 		#Request
 		uri = "http://127.0.0.1:5003/canteen"
-		print("URI " + uri)
 		r = requests.get(uri)
-		print("STATUS CODE: ",r.status_code)
 		data = r.json()
-		print(data)
 
 		for food in data["meal"]:
-			print("\n")
-			print("Refeição:", food["type"])
 			can.meal.append(food["type"])
 			for elem in food["info"]:
-				print("Menu: ", elem['menu'])
-				print("Prato: ", elem['name'])
-				print("Tipo: ", elem['type'])
 				can.menu.append(elem["menu"])
 				can.name.append(elem["name"])
 				can.type.append(elem["type"])
@@ -229,11 +228,8 @@ def action():
 
 	#Secretariat Service
 	elif request.args.get('choice')=='sec':
-		#sec=Secretariat()
 		uri = "http://127.0.0.1:5001/secretariat"
-		print("URI " + uri)
 		r = requests.get(uri)
-		print("STATUS CODE: ",r.status_code)
 		sec.dictionary = r.json()
 		sec.dbToList()
 		return render_template('secretariat.html', name=sec.name, building=sec.building, schedule=sec.schedule, 
@@ -243,8 +239,6 @@ def action():
 def submit():
 	print('submit')
 	if request.args.get("user")=='admin' and request.args.get("pass")=='admin':
-		"""uri = "http://127.0.0.1:5004/admin"
-		r = requests.get(uri)"""
 		return render_template('admin.html')
 	else:
 		return render_template('loginError.html')
@@ -255,10 +249,8 @@ def choice():
 		link = "https://fenix.tecnico.ulisboa.pt/api/fenix/v1/"
 		service = request.args.get("servicename")
 		uri = link + service
-		print(uri)
 		r = requests.get(uri)
 		data =  r.json()
-		print(r.status_code)
 		if r.status_code == 200:
 			return render_template("newService.html", data=data, service=service)
 		else:
@@ -311,9 +303,10 @@ def editSec():
 
 	with open('database.txt', 'w') as outfile:
 		json.dump(admin.dictionary, outfile)
-	print("reached the end")
 	return render_template("admin.html")
 
 if __name__ == '__main__':
+	print("Server running on port: "+str(5000))
 	app.run(debug=True, port=5000)
+
 

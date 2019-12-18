@@ -32,21 +32,6 @@ class Secretariat:
 					"schedule" : i["schedule"],
 					"description" : i["description"]
 				})
-		print(self.dictionary['sect'])
-
-	def dbToList(self):
-		self.name = []
-		self.building = []
-		self.schedule = []
-		self.description = []
-		for i in self.dictionary['sect']:
-			self.name.append(i["name"])
-			self.building.append(i["building"])
-			self.schedule.append(i["schedule"])
-			self.description.append(i["description"])
-
-	def getSize(self):
-		return(len(self.name))
 
 app = Flask(__name__)
 logging.basicConfig(filename='logs.log',level=logging.DEBUG)
@@ -59,4 +44,5 @@ def sec_info():
 	return sec.dictionary
 
 if __name__ == '__main__':
+	print("Server running on port: "+str(5001))
 	app.run(debug=True, port=5001)
